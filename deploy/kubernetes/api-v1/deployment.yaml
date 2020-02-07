@@ -1,0 +1,34 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: movies-api
+  labels:
+    deployment: movies-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      pod: movies-api
+  template:
+    metadata:
+      labels:
+        pod: movies-api
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: pod
+                operator: In
+                values:
+                - movies-api
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: movies-api
+          image: passporter/movies-api:latest
+          imagePullPolicy: Always
+          workingDir: /usr/src/app
+          command: ['node', '.']
+          ports:
+            - containerPort: 3000

@@ -1,0 +1,30 @@
+version: "3.0"
+services:
+  movies-api:
+    image: movies-api
+    container_name: movies-api
+    restart: always
+    depends_on:
+      - movies_mongo
+    build:
+      context: ./../../sources/api-v1/
+      dockerfile: ./Dockerfile
+    command: bash -c "nodemon ."
+    volumes:
+      - ./../../sources/api-v1:/usr/src/app
+    ports:
+      - "3000:3000"
+    environment:
+      MONGO_URL: movies_mongo
+      MONGO_DATABASE: movies
+      
+  movies_mongo:
+    container_name: movies_mongo
+    image: mongo:latest
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+    volumes:
+      - ../../data/db:/data/db
+    ports:
+      - "27017:27017"
